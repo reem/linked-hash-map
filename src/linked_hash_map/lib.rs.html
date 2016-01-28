@@ -9,6 +9,7 @@
 
     <title>lib.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
 
     
@@ -958,8 +959,6 @@
 <span id="916">916</span>
 <span id="917">917</span>
 <span id="918">918</span>
-<span id="919">919</span>
-<span id="920">920</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2013 The Rust Project Developers. See the COPYRIGHT</span>
 <span class='comment'>// file at the top-level directory of this distribution and at</span>
@@ -991,15 +990,13 @@
 <span class='doccomment'>//! ```</span>
 
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>forbid</span>(<span class='ident'>missing_docs</span>)]</span>
-<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>hashmap_hasher</span>)]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>cfg_attr</span>(<span class='ident'>test</span>, <span class='ident'>feature</span>(<span class='ident'>test</span>))]</span>
 
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>borrow</span>::<span class='ident'>Borrow</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>cmp</span>::<span class='ident'>Ordering</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>collections</span>::<span class='ident'>hash_map</span>::{<span class='self'>self</span>, <span class='ident'>HashMap</span>};
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>collections</span>::<span class='ident'>hash_state</span>::<span class='ident'>HashState</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>hash</span>::{<span class='ident'>Hash</span>, <span class='ident'>Hasher</span>};
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>hash</span>::{<span class='ident'>BuildHasher</span>, <span class='ident'>Hash</span>, <span class='ident'>Hasher</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>iter</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>marker</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
@@ -1094,7 +1091,7 @@
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>K</span>: <span class='ident'>Hash</span> <span class='op'>+</span> <span class='ident'>Eq</span>, <span class='ident'>V</span>, <span class='ident'>S</span>: <span class='ident'>HashState</span><span class='op'>&gt;</span> <span class='ident'>LinkedHashMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span>, <span class='ident'>S</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>K</span>: <span class='ident'>Hash</span> <span class='op'>+</span> <span class='ident'>Eq</span>, <span class='ident'>V</span>, <span class='ident'>S</span>: <span class='ident'>BuildHasher</span><span class='op'>&gt;</span> <span class='ident'>LinkedHashMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span>, <span class='ident'>S</span><span class='op'>&gt;</span> {
     <span class='kw'>fn</span> <span class='ident'>with_map</span>(<span class='ident'>map</span>: <span class='ident'>HashMap</span><span class='op'>&lt;</span><span class='ident'>KeyRef</span><span class='op'>&lt;</span><span class='ident'>K</span><span class='op'>&gt;</span>, <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>LinkedHashMapEntry</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span><span class='op'>&gt;&gt;</span>, <span class='ident'>S</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
         <span class='ident'>LinkedHashMap</span> {
             <span class='ident'>map</span>: <span class='ident'>map</span>,
@@ -1105,12 +1102,12 @@
 
     <span class='doccomment'>/// Creates an empty linked hash map with the given initial hash state.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>with_hash_state</span>(<span class='ident'>hash_state</span>: <span class='ident'>S</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
-        <span class='ident'>Self</span>::<span class='ident'>with_map</span>(<span class='ident'>HashMap</span>::<span class='ident'>with_hash_state</span>(<span class='ident'>hash_state</span>))
+        <span class='ident'>Self</span>::<span class='ident'>with_map</span>(<span class='ident'>HashMap</span>::<span class='ident'>with_hasher</span>(<span class='ident'>hash_state</span>))
     }
 
     <span class='doccomment'>/// Creates an empty linked hash map with the given initial capacity and hash state.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>with_capacity_and_hash_state</span>(<span class='ident'>capacity</span>: <span class='ident'>usize</span>, <span class='ident'>hash_state</span>: <span class='ident'>S</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
-        <span class='ident'>Self</span>::<span class='ident'>with_map</span>(<span class='ident'>HashMap</span>::<span class='ident'>with_capacity_and_hash_state</span>(<span class='ident'>capacity</span>, <span class='ident'>hash_state</span>))
+        <span class='ident'>Self</span>::<span class='ident'>with_map</span>(<span class='ident'>HashMap</span>::<span class='ident'>with_capacity_and_hasher</span>(<span class='ident'>capacity</span>, <span class='ident'>hash_state</span>))
     }
 
     <span class='doccomment'>/// Reserves capacity for at least `additional` more elements to be inserted into the map. The</span>
@@ -1539,7 +1536,7 @@
 }
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>K</span>, <span class='ident'>V</span>, <span class='ident'>S</span>, <span class='ident'>Q</span>: ?<span class='ident'>Sized</span><span class='op'>&gt;</span> <span class='ident'>Index</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Q</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>LinkedHashMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span>, <span class='ident'>S</span><span class='op'>&gt;</span>
-    <span class='kw'>where</span> <span class='ident'>K</span>: <span class='ident'>Hash</span> <span class='op'>+</span> <span class='ident'>Eq</span> <span class='op'>+</span> <span class='ident'>Borrow</span><span class='op'>&lt;</span><span class='ident'>Q</span><span class='op'>&gt;</span>, <span class='ident'>S</span>: <span class='ident'>HashState</span>, <span class='ident'>Q</span>: <span class='ident'>Eq</span> <span class='op'>+</span> <span class='ident'>Hash</span>
+    <span class='kw'>where</span> <span class='ident'>K</span>: <span class='ident'>Hash</span> <span class='op'>+</span> <span class='ident'>Eq</span> <span class='op'>+</span> <span class='ident'>Borrow</span><span class='op'>&lt;</span><span class='ident'>Q</span><span class='op'>&gt;</span>, <span class='ident'>S</span>: <span class='ident'>BuildHasher</span>, <span class='ident'>Q</span>: <span class='ident'>Eq</span> <span class='op'>+</span> <span class='ident'>Hash</span>
 {
     <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>V</span>;
 
@@ -1549,14 +1546,14 @@
 }
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>K</span>, <span class='ident'>V</span>, <span class='ident'>S</span>, <span class='ident'>Q</span>: ?<span class='ident'>Sized</span><span class='op'>&gt;</span> <span class='ident'>IndexMut</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Q</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>LinkedHashMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span>, <span class='ident'>S</span><span class='op'>&gt;</span>
-    <span class='kw'>where</span> <span class='ident'>K</span>: <span class='ident'>Hash</span> <span class='op'>+</span> <span class='ident'>Eq</span> <span class='op'>+</span> <span class='ident'>Borrow</span><span class='op'>&lt;</span><span class='ident'>Q</span><span class='op'>&gt;</span>, <span class='ident'>S</span>: <span class='ident'>HashState</span>, <span class='ident'>Q</span>: <span class='ident'>Eq</span> <span class='op'>+</span> <span class='ident'>Hash</span>
+    <span class='kw'>where</span> <span class='ident'>K</span>: <span class='ident'>Hash</span> <span class='op'>+</span> <span class='ident'>Eq</span> <span class='op'>+</span> <span class='ident'>Borrow</span><span class='op'>&lt;</span><span class='ident'>Q</span><span class='op'>&gt;</span>, <span class='ident'>S</span>: <span class='ident'>BuildHasher</span>, <span class='ident'>Q</span>: <span class='ident'>Eq</span> <span class='op'>+</span> <span class='ident'>Hash</span>
 {
     <span class='kw'>fn</span> <span class='ident'>index_mut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>index</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Q</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>V</span> {
         <span class='self'>self</span>.<span class='ident'>get_mut</span>(<span class='ident'>index</span>).<span class='ident'>expect</span>(<span class='string'>&quot;no entry found for key&quot;</span>)
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>K</span>: <span class='ident'>Hash</span> <span class='op'>+</span> <span class='ident'>Eq</span>, <span class='ident'>V</span>, <span class='ident'>S</span>: <span class='ident'>HashState</span><span class='op'>&gt;</span> <span class='ident'>LinkedHashMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span>, <span class='ident'>S</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>K</span>: <span class='ident'>Hash</span> <span class='op'>+</span> <span class='ident'>Eq</span>, <span class='ident'>V</span>, <span class='ident'>S</span>: <span class='ident'>BuildHasher</span><span class='op'>&gt;</span> <span class='ident'>LinkedHashMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span>, <span class='ident'>S</span><span class='op'>&gt;</span> {
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>detach</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>node</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>LinkedHashMapEntry</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span><span class='op'>&gt;</span>) {
         <span class='kw'>unsafe</span> {
@@ -1585,11 +1582,11 @@
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>K</span>: <span class='ident'>Hash</span> <span class='op'>+</span> <span class='ident'>Eq</span>, <span class='ident'>V</span>, <span class='ident'>S</span>: <span class='ident'>HashState</span> <span class='op'>+</span> <span class='ident'>Default</span><span class='op'>&gt;</span> <span class='ident'>Default</span> <span class='kw'>for</span> <span class='ident'>LinkedHashMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span>, <span class='ident'>S</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>K</span>: <span class='ident'>Hash</span> <span class='op'>+</span> <span class='ident'>Eq</span>, <span class='ident'>V</span>, <span class='ident'>S</span>: <span class='ident'>BuildHasher</span> <span class='op'>+</span> <span class='ident'>Default</span><span class='op'>&gt;</span> <span class='ident'>Default</span> <span class='kw'>for</span> <span class='ident'>LinkedHashMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span>, <span class='ident'>S</span><span class='op'>&gt;</span> {
     <span class='kw'>fn</span> <span class='ident'>default</span>() <span class='op'>-&gt;</span> <span class='kw'>Self</span> { <span class='ident'>LinkedHashMap</span>::<span class='ident'>with_hash_state</span>(<span class='ident'>Default</span>::<span class='ident'>default</span>()) }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>K</span>: <span class='ident'>Hash</span> <span class='op'>+</span> <span class='ident'>Eq</span>, <span class='ident'>V</span>, <span class='ident'>S</span>: <span class='ident'>HashState</span><span class='op'>&gt;</span> <span class='ident'>Extend</span><span class='op'>&lt;</span>(<span class='ident'>K</span>, <span class='ident'>V</span>)<span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>LinkedHashMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span>, <span class='ident'>S</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>K</span>: <span class='ident'>Hash</span> <span class='op'>+</span> <span class='ident'>Eq</span>, <span class='ident'>V</span>, <span class='ident'>S</span>: <span class='ident'>BuildHasher</span><span class='op'>&gt;</span> <span class='ident'>Extend</span><span class='op'>&lt;</span>(<span class='ident'>K</span>, <span class='ident'>V</span>)<span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>LinkedHashMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span>, <span class='ident'>S</span><span class='op'>&gt;</span> {
     <span class='kw'>fn</span> <span class='ident'>extend</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>IntoIterator</span><span class='op'>&lt;</span><span class='ident'>Item</span><span class='op'>=</span>(<span class='ident'>K</span>, <span class='ident'>V</span>)<span class='op'>&gt;&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>iter</span>: <span class='ident'>T</span>) {
         <span class='kw'>for</span> (<span class='ident'>k</span>, <span class='ident'>v</span>) <span class='kw'>in</span> <span class='ident'>iter</span> {
             <span class='self'>self</span>.<span class='ident'>insert</span>(<span class='ident'>k</span>, <span class='ident'>v</span>);
@@ -1597,7 +1594,7 @@
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>K</span>: <span class='ident'>Hash</span> <span class='op'>+</span> <span class='ident'>Eq</span>, <span class='ident'>V</span>, <span class='ident'>S</span>: <span class='ident'>HashState</span> <span class='op'>+</span> <span class='ident'>Default</span><span class='op'>&gt;</span> <span class='ident'>iter</span>::<span class='ident'>FromIterator</span><span class='op'>&lt;</span>(<span class='ident'>K</span>, <span class='ident'>V</span>)<span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>LinkedHashMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span>, <span class='ident'>S</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>K</span>: <span class='ident'>Hash</span> <span class='op'>+</span> <span class='ident'>Eq</span>, <span class='ident'>V</span>, <span class='ident'>S</span>: <span class='ident'>BuildHasher</span> <span class='op'>+</span> <span class='ident'>Default</span><span class='op'>&gt;</span> <span class='ident'>iter</span>::<span class='ident'>FromIterator</span><span class='op'>&lt;</span>(<span class='ident'>K</span>, <span class='ident'>V</span>)<span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>LinkedHashMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span>, <span class='ident'>S</span><span class='op'>&gt;</span> {
     <span class='kw'>fn</span> <span class='ident'>from_iter</span><span class='op'>&lt;</span><span class='ident'>I</span>: <span class='ident'>IntoIterator</span><span class='op'>&lt;</span><span class='ident'>Item</span><span class='op'>=</span>(<span class='ident'>K</span>, <span class='ident'>V</span>)<span class='op'>&gt;&gt;</span>(<span class='ident'>iter</span>: <span class='ident'>I</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
         <span class='kw'>let</span> <span class='ident'>iter</span> <span class='op'>=</span> <span class='ident'>iter</span>.<span class='ident'>into_iter</span>();
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>map</span> <span class='op'>=</span> <span class='ident'>Self</span>::<span class='ident'>with_capacity_and_hash_state</span>(<span class='ident'>iter</span>.<span class='ident'>size_hint</span>().<span class='number'>0</span>, <span class='ident'>Default</span>::<span class='ident'>default</span>());
@@ -1606,14 +1603,14 @@
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>A</span>: <span class='ident'>fmt</span>::<span class='ident'>Debug</span> <span class='op'>+</span> <span class='ident'>Hash</span> <span class='op'>+</span> <span class='ident'>Eq</span>, <span class='ident'>B</span>: <span class='ident'>fmt</span>::<span class='ident'>Debug</span>, <span class='ident'>S</span>: <span class='ident'>HashState</span><span class='op'>&gt;</span> <span class='ident'>fmt</span>::<span class='ident'>Debug</span> <span class='kw'>for</span> <span class='ident'>LinkedHashMap</span><span class='op'>&lt;</span><span class='ident'>A</span>, <span class='ident'>B</span>, <span class='ident'>S</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>A</span>: <span class='ident'>fmt</span>::<span class='ident'>Debug</span> <span class='op'>+</span> <span class='ident'>Hash</span> <span class='op'>+</span> <span class='ident'>Eq</span>, <span class='ident'>B</span>: <span class='ident'>fmt</span>::<span class='ident'>Debug</span>, <span class='ident'>S</span>: <span class='ident'>BuildHasher</span><span class='op'>&gt;</span> <span class='ident'>fmt</span>::<span class='ident'>Debug</span> <span class='kw'>for</span> <span class='ident'>LinkedHashMap</span><span class='op'>&lt;</span><span class='ident'>A</span>, <span class='ident'>B</span>, <span class='ident'>S</span><span class='op'>&gt;</span> {
     <span class='doccomment'>/// Returns a string that lists the key-value pairs in insertion order.</span>
     <span class='kw'>fn</span> <span class='ident'>fmt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fmt</span>::<span class='ident'>Formatter</span>) <span class='op'>-&gt;</span> <span class='ident'>fmt</span>::<span class='prelude-ty'>Result</span> {
         <span class='ident'>f</span>.<span class='ident'>debug_map</span>().<span class='ident'>entries</span>(<span class='self'>self</span>).<span class='ident'>finish</span>()
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>K</span>: <span class='ident'>Hash</span> <span class='op'>+</span> <span class='ident'>Eq</span>, <span class='ident'>V</span>: <span class='ident'>PartialEq</span>, <span class='ident'>S</span>: <span class='ident'>HashState</span><span class='op'>&gt;</span> <span class='ident'>PartialEq</span> <span class='kw'>for</span> <span class='ident'>LinkedHashMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span>, <span class='ident'>S</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>K</span>: <span class='ident'>Hash</span> <span class='op'>+</span> <span class='ident'>Eq</span>, <span class='ident'>V</span>: <span class='ident'>PartialEq</span>, <span class='ident'>S</span>: <span class='ident'>BuildHasher</span><span class='op'>&gt;</span> <span class='ident'>PartialEq</span> <span class='kw'>for</span> <span class='ident'>LinkedHashMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span>, <span class='ident'>S</span><span class='op'>&gt;</span> {
     <span class='kw'>fn</span> <span class='ident'>eq</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>other</span>: <span class='kw-2'>&amp;</span><span class='kw'>Self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
         <span class='self'>self</span>.<span class='ident'>len</span>() <span class='op'>==</span> <span class='ident'>other</span>.<span class='ident'>len</span>() <span class='op'>&amp;&amp;</span> <span class='self'>self</span>.<span class='ident'>iter</span>().<span class='ident'>eq</span>(<span class='ident'>other</span>)
     }
@@ -1623,9 +1620,9 @@
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>K</span>: <span class='ident'>Hash</span> <span class='op'>+</span> <span class='ident'>Eq</span>, <span class='ident'>V</span>: <span class='ident'>Eq</span>, <span class='ident'>S</span>: <span class='ident'>HashState</span><span class='op'>&gt;</span> <span class='ident'>Eq</span> <span class='kw'>for</span> <span class='ident'>LinkedHashMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span>, <span class='ident'>S</span><span class='op'>&gt;</span> {}
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>K</span>: <span class='ident'>Hash</span> <span class='op'>+</span> <span class='ident'>Eq</span>, <span class='ident'>V</span>: <span class='ident'>Eq</span>, <span class='ident'>S</span>: <span class='ident'>BuildHasher</span><span class='op'>&gt;</span> <span class='ident'>Eq</span> <span class='kw'>for</span> <span class='ident'>LinkedHashMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span>, <span class='ident'>S</span><span class='op'>&gt;</span> {}
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>K</span>: <span class='ident'>Hash</span> <span class='op'>+</span> <span class='ident'>Eq</span> <span class='op'>+</span> <span class='ident'>PartialOrd</span>, <span class='ident'>V</span>: <span class='ident'>PartialOrd</span>, <span class='ident'>S</span>: <span class='ident'>HashState</span><span class='op'>&gt;</span> <span class='ident'>PartialOrd</span> <span class='kw'>for</span> <span class='ident'>LinkedHashMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span>, <span class='ident'>S</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>K</span>: <span class='ident'>Hash</span> <span class='op'>+</span> <span class='ident'>Eq</span> <span class='op'>+</span> <span class='ident'>PartialOrd</span>, <span class='ident'>V</span>: <span class='ident'>PartialOrd</span>, <span class='ident'>S</span>: <span class='ident'>BuildHasher</span><span class='op'>&gt;</span> <span class='ident'>PartialOrd</span> <span class='kw'>for</span> <span class='ident'>LinkedHashMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span>, <span class='ident'>S</span><span class='op'>&gt;</span> {
     <span class='kw'>fn</span> <span class='ident'>partial_cmp</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>other</span>: <span class='kw-2'>&amp;</span><span class='kw'>Self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Ordering</span><span class='op'>&gt;</span> {
         <span class='self'>self</span>.<span class='ident'>iter</span>().<span class='ident'>partial_cmp</span>(<span class='ident'>other</span>)
     }
@@ -1647,13 +1644,13 @@
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>K</span>: <span class='ident'>Hash</span> <span class='op'>+</span> <span class='ident'>Eq</span> <span class='op'>+</span> <span class='ident'>Ord</span>, <span class='ident'>V</span>: <span class='ident'>Ord</span>, <span class='ident'>S</span>: <span class='ident'>HashState</span><span class='op'>&gt;</span> <span class='ident'>Ord</span> <span class='kw'>for</span> <span class='ident'>LinkedHashMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span>, <span class='ident'>S</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>K</span>: <span class='ident'>Hash</span> <span class='op'>+</span> <span class='ident'>Eq</span> <span class='op'>+</span> <span class='ident'>Ord</span>, <span class='ident'>V</span>: <span class='ident'>Ord</span>, <span class='ident'>S</span>: <span class='ident'>BuildHasher</span><span class='op'>&gt;</span> <span class='ident'>Ord</span> <span class='kw'>for</span> <span class='ident'>LinkedHashMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span>, <span class='ident'>S</span><span class='op'>&gt;</span> {
     <span class='kw'>fn</span> <span class='ident'>cmp</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>other</span>: <span class='kw-2'>&amp;</span><span class='kw'>Self</span>) <span class='op'>-&gt;</span> <span class='ident'>Ordering</span> {
         <span class='self'>self</span>.<span class='ident'>iter</span>().<span class='ident'>cmp</span>(<span class='ident'>other</span>)
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>K</span>: <span class='ident'>Hash</span> <span class='op'>+</span> <span class='ident'>Eq</span>, <span class='ident'>V</span>: <span class='ident'>Hash</span>, <span class='ident'>S</span>: <span class='ident'>HashState</span><span class='op'>&gt;</span> <span class='ident'>Hash</span> <span class='kw'>for</span> <span class='ident'>LinkedHashMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span>, <span class='ident'>S</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>K</span>: <span class='ident'>Hash</span> <span class='op'>+</span> <span class='ident'>Eq</span>, <span class='ident'>V</span>: <span class='ident'>Hash</span>, <span class='ident'>S</span>: <span class='ident'>BuildHasher</span><span class='op'>&gt;</span> <span class='ident'>Hash</span> <span class='kw'>for</span> <span class='ident'>LinkedHashMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span>, <span class='ident'>S</span><span class='op'>&gt;</span> {
     <span class='kw'>fn</span> <span class='ident'>hash</span><span class='op'>&lt;</span><span class='ident'>H</span>: <span class='ident'>Hasher</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>h</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>H</span>) { <span class='kw'>for</span> <span class='ident'>e</span> <span class='kw'>in</span> <span class='self'>self</span>.<span class='ident'>iter</span>() { <span class='ident'>e</span>.<span class='ident'>hash</span>(<span class='ident'>h</span>); } }
 }
 
@@ -1830,13 +1827,13 @@
     <span class='kw'>fn</span> <span class='ident'>len</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> { <span class='self'>self</span>.<span class='ident'>inner</span>.<span class='ident'>len</span>() }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>K</span>: <span class='ident'>Hash</span> <span class='op'>+</span> <span class='ident'>Eq</span>, <span class='ident'>V</span>, <span class='ident'>S</span>: <span class='ident'>HashState</span><span class='op'>&gt;</span> <span class='ident'>IntoIterator</span> <span class='kw'>for</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>LinkedHashMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span>, <span class='ident'>S</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>K</span>: <span class='ident'>Hash</span> <span class='op'>+</span> <span class='ident'>Eq</span>, <span class='ident'>V</span>, <span class='ident'>S</span>: <span class='ident'>BuildHasher</span><span class='op'>&gt;</span> <span class='ident'>IntoIterator</span> <span class='kw'>for</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>LinkedHashMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span>, <span class='ident'>S</span><span class='op'>&gt;</span> {
     <span class='kw'>type</span> <span class='ident'>Item</span> <span class='op'>=</span> (<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>K</span>, <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>V</span>);
     <span class='kw'>type</span> <span class='ident'>IntoIter</span> <span class='op'>=</span> <span class='ident'>Iter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>K</span>, <span class='ident'>V</span><span class='op'>&gt;</span>;
     <span class='kw'>fn</span> <span class='ident'>into_iter</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Iter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>K</span>, <span class='ident'>V</span><span class='op'>&gt;</span> { <span class='self'>self</span>.<span class='ident'>iter</span>() }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>K</span>: <span class='ident'>Hash</span> <span class='op'>+</span> <span class='ident'>Eq</span>, <span class='ident'>V</span>, <span class='ident'>S</span>: <span class='ident'>HashState</span><span class='op'>&gt;</span> <span class='ident'>IntoIterator</span> <span class='kw'>for</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>LinkedHashMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span>, <span class='ident'>S</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>K</span>: <span class='ident'>Hash</span> <span class='op'>+</span> <span class='ident'>Eq</span>, <span class='ident'>V</span>, <span class='ident'>S</span>: <span class='ident'>BuildHasher</span><span class='op'>&gt;</span> <span class='ident'>IntoIterator</span> <span class='kw'>for</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>LinkedHashMap</span><span class='op'>&lt;</span><span class='ident'>K</span>, <span class='ident'>V</span>, <span class='ident'>S</span><span class='op'>&gt;</span> {
     <span class='kw'>type</span> <span class='ident'>Item</span> <span class='op'>=</span> (<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>K</span>, <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>V</span>);
     <span class='kw'>type</span> <span class='ident'>IntoIter</span> <span class='op'>=</span> <span class='ident'>IterMut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>K</span>, <span class='ident'>V</span><span class='op'>&gt;</span>;
     <span class='kw'>fn</span> <span class='ident'>into_iter</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>IterMut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>K</span>, <span class='ident'>V</span><span class='op'>&gt;</span> { <span class='self'>self</span>.<span class='ident'>iter_mut</span>() }
@@ -1941,6 +1938,6 @@
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
     
-    <script async src="../../search-index.js"></script>
+    <script defer src="../../search-index.js"></script>
 </body>
 </html>
